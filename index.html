@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ASCENDIX · Engenharia · Software</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.0/build/spline-viewer.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -42,15 +43,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,13,.97
 .lang-sep{width:1px;background:var(--border);height:100%;align-self:stretch}
 
 /* HERO */
-#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:54px}
-.hero-main{padding:56px 40px 48px;max-width:1280px;margin:0 auto;width:100%}
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:54px;position:relative;overflow:hidden}
+.hero-main{padding:48px 40px 40px;max-width:1280px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center;flex:1}
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding-right:32px;z-index:2}
+.hero-robot{position:relative;height:400px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-robot spline-viewer{width:80%;height:80%;--spline-viewer-bg:transparent}
+.hero-robot::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 50%,rgba(245,196,0,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+.hero-robot::after{content:'';position:absolute;left:0;top:0;bottom:0;width:100px;background:linear-gradient(to right,var(--bg) 30%,transparent 100%);pointer-events:none;z-index:3}
 .tag-row{display:flex;align-items:center;gap:12px;font-family:var(--fm);font-size:10px;letter-spacing:.18em;color:var(--gray);text-transform:uppercase;margin-bottom:28px}
 .tag-dot{width:8px;height:8px;background:var(--yellow);flex-shrink:0}
 .hero-h{font-family:var(--fd);font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:-.01em;margin-bottom:32px}
-.hero-h .l1{display:block;font-size:clamp(52px,8vw,108px);color:var(--white)}
-.hero-h .l2{display:block;font-size:clamp(52px,8vw,108px);color:var(--yellow)}
-.hero-h .l3{display:block;font-size:clamp(52px,8vw,108px);color:var(--gray2)}
-.hero-desc{font-size:15px;color:var(--gray);max-width:560px;line-height:1.75;margin-bottom:36px}
+.hero-h .l1{display:block;font-size:clamp(40px,5.5vw,80px);color:var(--white)}
+.hero-h .l2{display:block;font-size:clamp(40px,5.5vw,80px);color:var(--yellow)}
+.hero-h .l3{display:block;font-size:clamp(40px,5.5vw,80px);color:var(--gray2)}
+.hero-desc{font-size:14.5px;color:var(--gray);max-width:460px;line-height:1.75;margin-bottom:36px}
 .hero-desc strong{color:var(--white)}
 .hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .available{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:9.5px;letter-spacing:.14em;color:var(--gray);text-transform:uppercase}
@@ -135,16 +141,88 @@ section{padding:96px 0}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
 .faq-a-inner{padding:0 0 20px 36px;font-size:13.5px;color:var(--gray);line-height:1.8}
 
-/* CONTACTO */
-#contacto{background:var(--bg);border-top:1px solid var(--border)}
-.contact-center{max-width:640px}
-.contact-desc{font-size:15px;color:var(--gray);line-height:1.8;margin-top:28px;margin-bottom:48px}
+/* CONTACTO — Lamp Effect */
+#contacto{
+  position:relative;background:var(--bg);border-top:1px solid var(--border);
+  overflow:hidden;min-height:80vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+/* blur overlay */
+.ct-blur{position:absolute;top:0;left:0;right:0;height:180px;background:transparent;backdrop-filter:blur(6px);opacity:.08;z-index:1;pointer-events:none}
+/* central big glow */
+.ct-glow{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%) translateY(-30%);
+  width:480px;height:160px;
+  background:rgba(255,255,255,.45);border-radius:50%;filter:blur(64px);
+  z-index:2;pointer-events:none;
+  opacity:0;transition:opacity .8s .3s
+}
+/* small sharp glow */
+.ct-glow-sm{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%) translateY(-20%);
+  width:80px;height:160px;
+  background:rgba(255,255,255,.55);border-radius:50%;filter:blur(28px);
+  z-index:3;pointer-events:none;
+  transition:width .8s .3s ease-in-out,opacity .8s .3s
+}
+/* expanding top line */
+.ct-line{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%) translateY(8px);
+  height:2px;background:rgba(255,255,255,.75);
+  z-index:4;pointer-events:none;
+  width:120px;transition:width .8s .3s ease-in-out
+}
+/* LEFT cone */
+.ct-cone-l{
+  position:absolute;top:0;right:50%;height:240px;
+  background:conic-gradient(from 70deg at center top,rgba(255,255,255,.35),transparent 60%,transparent);
+  width:120px;opacity:.5;
+  z-index:1;pointer-events:none;
+  transition:width .8s .3s ease-in-out,opacity .8s .3s;
+  overflow:hidden;
+}
+.ct-cone-l::before{content:'';position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(to top,var(--bg),transparent);z-index:2}
+.ct-cone-l::after{content:'';position:absolute;top:0;left:0;width:120px;height:100%;background:linear-gradient(to right,var(--bg),transparent);z-index:2}
+/* RIGHT cone */
+.ct-cone-r{
+  position:absolute;top:0;left:50%;height:240px;
+  background:conic-gradient(from 290deg at center top,transparent 40%,rgba(255,255,255,.35));
+  width:120px;opacity:.5;
+  z-index:1;pointer-events:none;
+  transition:width .8s .3s ease-in-out,opacity .8s .3s;
+  overflow:hidden;
+}
+.ct-cone-r::before{content:'';position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(to top,var(--bg),transparent);z-index:2}
+.ct-cone-r::after{content:'';position:absolute;top:0;right:0;width:120px;height:100%;background:linear-gradient(to left,var(--bg),transparent);z-index:2}
+
+/* ACTIVE state — triggered by IntersectionObserver */
+#contacto.lamp-on .ct-glow{opacity:1}
+#contacto.lamp-on .ct-glow-sm{width:200px;opacity:1}
+#contacto.lamp-on .ct-line{width:520px}
+#contacto.lamp-on .ct-cone-l{width:480px;opacity:1}
+#contacto.lamp-on .ct-cone-r{width:480px;opacity:1}
+
+/* Content */
+.contact-inner{
+  position:relative;z-index:10;
+  text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+  padding:80px 40px 96px;
+  width:100%;max-width:700px;
+  transform:translateY(40px);opacity:0;
+  transition:transform .8s .5s ease,opacity .8s .5s
+}
+#contacto.lamp-on .contact-inner{transform:translateY(0);opacity:1}
+.contact-desc{font-size:15px;color:var(--gray);line-height:1.8;margin-top:28px;margin-bottom:48px;max-width:480px}
 .contact-desc strong{color:var(--white)}
-.contact-channels{display:flex;flex-direction:column;gap:1px}
-.channel{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;background:var(--card);border:1px solid var(--border);text-decoration:none;transition:border-color .2s,background .2s}
-.channel:hover{border-color:var(--yellow);background:#1a1a00}
+.contact-channels{display:flex;flex-direction:column;gap:1px;width:100%;max-width:560px}
+.channel{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:var(--card);border:1px solid var(--border);text-decoration:none;transition:border-color .2s,background .2s,transform .2s}
+.channel:hover{border-color:var(--yellow);background:rgba(245,196,0,.05);transform:translateX(4px)}
 .channel-left{display:flex;align-items:center;gap:16px}
-.channel-icon{font-size:18px;width:36px;text-align:center}
+.channel-icon{font-size:18px;width:36px;text-align:center;color:var(--yellow)}
 .channel-lbl{font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gray2);margin-bottom:4px}
 .channel-val{font-family:var(--fd);font-weight:800;font-size:20px;color:var(--white);letter-spacing:.03em}
 .channel-arrow{font-family:var(--fm);font-size:11px;color:var(--yellow);letter-spacing:.1em}
@@ -164,13 +242,19 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
   .stat{border-bottom:1px solid var(--border)}
   .srv-row{grid-template-columns:48px 1fr}
   .srv-row-desc{grid-column:2}
+  /* Hero em tablet: robô por baixo */
+  .hero-main{grid-template-columns:1fr;padding:48px 32px 0}
+  .hero-left{padding-right:0}
+  .hero-robot{height:420px;margin-top:0}
+  .hero-robot::after{display:none}
 }
 @media(max-width:600px){
   .steps{grid-template-columns:1fr}
   .stats-bar{grid-template-columns:1fr}
   nav{padding:0 16px}
-  .hero-main,.container{padding:0 20px}
-  .hero-main{padding:40px 20px 32px}
+  .container{padding:0 20px}
+  .hero-main{padding:36px 20px 0}
+  .hero-robot{height:320px}
   footer{flex-direction:column;gap:8px;text-align:center}
 }
 </style>
@@ -210,23 +294,36 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
 <!-- HERO -->
 <section id="hero">
   <div class="hero-main">
-    <div class="tag-row">
-      <span class="tag-dot"></span>
-      <span data-i18n="hero.tag">ENGENHARIA DE SOFTWARE · SISTEMAS CRÍTICOS · SLA CONTRATUAL · PORTUGAL</span>
+
+    <!-- LEFT — texto -->
+    <div class="hero-left">
+      <div class="tag-row">
+        <span class="tag-dot"></span>
+        <span data-i18n="hero.tag">ENGENHARIA DE SOFTWARE · SISTEMAS CRÍTICOS · SLA CONTRATUAL · PORTUGAL</span>
+      </div>
+      <div class="hero-h">
+        <span class="l1" data-i18n="hero.l1">ENGENHARIA DE SOFTWARE</span>
+        <span class="l2" data-i18n="hero.l2">PARA OPERAÇÕES EXIGENTES.</span>
+        <span class="l3" data-i18n="hero.l3">SISTEMAS QUE NÃO PARAM.</span>
+      </div>
+      <p class="hero-desc" data-i18n-html="hero.desc">
+        A <strong>Ascendix Engenharia</strong> projeta, desenvolve e opera plataformas de missão crítica. Código limpo, arquitetura sólida, entregas previsíveis — sob SLA, com suporte e conformidade RGPD.
+      </p>
+      <div class="hero-actions">
+        <a href="#servicos" class="btn btn-yellow" style="padding:13px 26px;font-size:11px" data-i18n="hero.btn1">Os Nossos Serviços →</a>
+        <a href="#contacto" class="btn btn-outline" style="padding:13px 26px;font-size:11px" data-i18n="hero.btn2">Pedir Proposta</a>
+        <span class="available"><span class="pulse"></span><span data-i18n="hero.available">Disponível para novos projetos</span></span>
+      </div>
     </div>
-    <div class="hero-h">
-      <span class="l1" data-i18n="hero.l1">ENGENHARIA DE SOFTWARE</span>
-      <span class="l2" data-i18n="hero.l2">PARA OPERAÇÕES EXIGENTES.</span>
-      <span class="l3" data-i18n="hero.l3">SISTEMAS QUE NÃO PARAM.</span>
+
+    <!-- RIGHT — robô 3D interativo -->
+    <div class="hero-robot">
+      <spline-viewer
+        url="https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode"
+        style="width:100%;height:100%;background:transparent">
+      </spline-viewer>
     </div>
-    <p class="hero-desc" data-i18n-html="hero.desc">
-      A <strong>Ascendix Engenharia</strong> projeta, desenvolve e opera plataformas de missão crítica. Código limpo, arquitetura sólida, entregas previsíveis — sob SLA, com suporte e conformidade RGPD.
-    </p>
-    <div class="hero-actions">
-      <a href="#servicos" class="btn btn-yellow" style="padding:13px 26px;font-size:11px" data-i18n="hero.btn1">Os Nossos Serviços →</a>
-      <a href="#contacto" class="btn btn-outline" style="padding:13px 26px;font-size:11px" data-i18n="hero.btn2">Pedir Proposta</a>
-      <span class="available"><span class="pulse"></span><span data-i18n="hero.available">Disponível para novos projetos</span></span>
-    </div>
+
   </div>
 
   <div class="stats-bar">
@@ -479,37 +576,52 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
 
 <!-- CONTACTO -->
 <section id="contacto">
-  <div class="container">
-    <div class="contact-center">
-      <div class="sec-lbl" data-i18n="ct.lbl">CONTACTO.DIRETO</div>
-      <div class="sec-h">
-        <span class="w" data-i18n="ct.h1">VAMOS</span>
-        <span class="y" data-i18n="ct.h2">FALAR.</span>
-      </div>
-      <p class="contact-desc" data-i18n-html="ct.desc">Partilhe o desafio que enfrenta. Em <strong>48 horas</strong> respondemos com uma análise inicial sem compromisso.</p>
-      <div class="contact-channels">
-        <a href="mailto:comercial@ascendixeng.pt" class="channel">
-          <div class="channel-left">
-            <div class="channel-icon">✉</div>
-            <div>
-              <div class="channel-lbl" data-i18n="ct.email-lbl">Email</div>
-              <div class="channel-val">comercial@ascendixeng.pt</div>
-            </div>
-          </div>
-          <div class="channel-arrow" data-i18n="ct.email-arrow">ESCREVER →</div>
-        </a>
-        <a href="tel:+351936334424" class="channel">
-          <div class="channel-left">
-            <div class="channel-icon">☎</div>
-            <div>
-              <div class="channel-lbl" data-i18n="ct.phone-lbl">Telefone / WhatsApp</div>
-              <div class="channel-val">+351 936 334 424</div>
-            </div>
-          </div>
-          <div class="channel-arrow" data-i18n="ct.phone-arrow">LIGAR →</div>
-        </a>
-      </div>
+
+  <!-- Lamp layers -->
+  <div class="ct-blur"></div>
+  <div class="ct-glow"></div>
+  <div class="ct-glow-sm"></div>
+  <div class="ct-line"></div>
+  <div class="ct-cone-l"></div>
+  <div class="ct-cone-r"></div>
+
+  <!-- Content -->
+  <div class="contact-inner">
+
+    <div class="sec-lbl" data-i18n="ct.lbl" style="justify-content:center">CONTACTO.DIRETO</div>
+
+    <div class="sec-h" style="text-align:center;margin-top:8px">
+      <span class="w" data-i18n="ct.h1">VAMOS</span>
+      <span class="y" data-i18n="ct.h2">FALAR.</span>
     </div>
+
+    <p class="contact-desc" data-i18n-html="ct.desc">
+      Partilhe o desafio que enfrenta. Em <strong>48 horas</strong> respondemos com uma análise inicial sem compromisso.
+    </p>
+
+    <div class="contact-channels">
+      <a href="mailto:comercial@ascendixeng.pt" class="channel">
+        <div class="channel-left">
+          <div class="channel-icon">✉</div>
+          <div>
+            <div class="channel-lbl" data-i18n="ct.email-lbl">Email</div>
+            <div class="channel-val">comercial@ascendixeng.pt</div>
+          </div>
+        </div>
+        <div class="channel-arrow" data-i18n="ct.email-arrow">ESCREVER →</div>
+      </a>
+      <a href="tel:+351936334424" class="channel">
+        <div class="channel-left">
+          <div class="channel-icon">☎</div>
+          <div>
+            <div class="channel-lbl" data-i18n="ct.phone-lbl">Telefone / WhatsApp</div>
+            <div class="channel-val">+351 936 334 424</div>
+          </div>
+        </div>
+        <div class="channel-arrow" data-i18n="ct.phone-arrow">LIGAR →</div>
+      </a>
+    </div>
+
   </div>
 </section>
 
@@ -670,6 +782,13 @@ const io=new IntersectionObserver(entries=>{
 },{threshold:.25});
 const bar=document.querySelector('.stats-bar');
 if(bar) io.observe(bar);
+
+/* ── LAMP CONTACT ── */
+const lampObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('lamp-on'); lampObs.unobserve(e.target); } });
+},{threshold:.15});
+const ctSec = document.getElementById('contacto');
+if(ctSec) lampObs.observe(ctSec);
 
 /* ── NAV ACTIVE ── */
 const secs=document.querySelectorAll('section[id]'), lnks=document.querySelectorAll('.nav-links a');
