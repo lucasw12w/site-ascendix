@@ -6,7 +6,11 @@
 <title>ASCENDIX · Engenharia · Software</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
 <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.0/build/spline-viewer.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <style>
+html,body{background:#0D0D0D}
+.pin-spacer{background:#0D0D0D!important}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0D0D0D;--bg2:#111111;--card:#161616;--border:#242424;
@@ -82,21 +86,109 @@ section{padding:96px 0}
 .sec-h .m{display:block;font-size:clamp(40px,6vw,80px);color:var(--gray2)}
 .sec-h .y{display:block;font-size:clamp(40px,6vw,80px);color:var(--yellow)}
 
-/* SOBRE */
-#sobre{background:var(--bg)}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
-.about-p{color:var(--gray);font-size:14.5px;line-height:1.8;margin-top:24px}
-.about-p strong{color:var(--white)}
-.about-kpis{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);margin-top:44px}
-.kpi{padding:20px 24px;border-right:1px solid var(--border)}
-.kpi:last-child{border-right:none}
-.kpi-v{font-family:var(--fd);font-weight:900;font-size:34px;color:var(--white);line-height:1}
-.kpi-l{font-family:var(--fm);font-size:8.5px;letter-spacing:.15em;color:var(--gray);text-transform:uppercase;margin-top:5px}
-.about-cards{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
-.acard{background:var(--card);padding:28px 30px}
-.acard-icon{font-size:20px;margin-bottom:14px}
-.acard-title{font-family:var(--fd);font-weight:800;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--white);margin-bottom:10px}
-.acard-desc{font-size:12.5px;color:var(--gray);line-height:1.7}
+/* SOBRE — Cinematic Scroll */
+#sobre{
+  position:relative;
+  height:100vh;
+  overflow:hidden;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+/* film grain */
+#sobre .s-grain{
+  position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.04;mix-blend-mode:overlay;
+  background:url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%25" height="100%25" filter="url(%23n)"/></svg>');
+}
+/* grid */
+#sobre .s-grid{
+  position:absolute;inset:0;z-index:0;opacity:.4;pointer-events:none;
+  background-size:60px 60px;
+  background-image:
+    linear-gradient(to right,rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(255,255,255,.04) 1px,transparent 1px);
+  mask-image:radial-gradient(ellipse at center,black 0%,transparent 70%);
+}
+/* background headline — zooms/blurs away as card rises */
+#sobre .s-bg{
+  position:absolute;inset:0;z-index:2;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;pointer-events:none;
+  will-change:transform,filter,opacity;
+}
+#sobre .s-bg .sec-lbl{justify-content:center;margin-bottom:24px}
+#sobre .s-bg-h1{
+  font-family:var(--fd);font-weight:900;text-transform:uppercase;
+  font-size:clamp(56px,9vw,120px);line-height:.92;letter-spacing:-.02em;
+  color:var(--white);display:block;
+}
+#sobre .s-bg-h2{
+  font-family:var(--fd);font-weight:900;text-transform:uppercase;
+  font-size:clamp(56px,9vw,120px);line-height:.92;letter-spacing:-.02em;
+  color:var(--gray2);display:block;
+}
+/* the cinematic card */
+#sobre .s-card{
+  position:absolute;z-index:10;
+  width:88vw;height:86vh;
+  border-radius:28px;
+  background:linear-gradient(145deg,#111700 0%,#0D0D0D 60%,#0a0d00 100%);
+  border:1px solid rgba(245,196,0,.12);
+  box-shadow:
+    0 60px 120px -20px rgba(0,0,0,.95),
+    0 30px 60px -20px rgba(0,0,0,.8),
+    inset 0 1px 2px rgba(245,196,0,.08),
+    inset 0 -2px 4px rgba(0,0,0,.8);
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  will-change:transform,width,height,border-radius;
+}
+/* mouse sheen */
+#sobre .s-sheen{
+  position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+  background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),rgba(245,196,0,.05) 0%,transparent 40%);
+  mix-blend-mode:screen;
+}
+/* yellow top accent line on card */
+#sobre .s-card::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(to right,transparent,rgba(245,196,0,.4),transparent);
+  z-index:2;
+}
+/* card inner grid */
+#sobre .s-inner{
+  position:relative;z-index:5;
+  width:100%;height:100%;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:0;
+  padding:48px 56px;
+  max-width:1280px;margin:0 auto;
+}
+/* LEFT */
+#sobre .s-left{display:flex;flex-direction:column;justify-content:center;padding-right:48px;border-right:1px solid var(--border)}
+#sobre .s-left .sec-lbl{margin-bottom:16px}
+#sobre .s-title{font-family:var(--fd);font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:-.01em;margin-bottom:24px}
+#sobre .s-title .w{display:block;font-size:clamp(36px,4vw,58px);color:var(--white)}
+#sobre .s-title .m{display:block;font-size:clamp(36px,4vw,58px);color:var(--gray2)}
+#sobre .s-p{color:var(--gray);font-size:13.5px;line-height:1.8;margin-bottom:12px}
+#sobre .s-p strong{color:var(--white)}
+#sobre .s-kpis{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);margin-top:32px}
+#sobre .s-kpi{padding:16px 18px;border-right:1px solid var(--border)}
+#sobre .s-kpi:last-child{border-right:none}
+#sobre .s-kpi-v{font-family:var(--fd);font-weight:900;font-size:30px;color:var(--yellow);line-height:1}
+#sobre .s-kpi-l{font-family:var(--fm);font-size:8px;letter-spacing:.15em;color:var(--gray);text-transform:uppercase;margin-top:4px}
+/* RIGHT */
+#sobre .s-right{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);padding-left:0;height:100%;max-height:420px;align-self:center;margin-left:48px}
+#sobre .s-ac{background:#0f0f0f;padding:24px 22px;display:flex;flex-direction:column}
+#sobre .s-ac-icon{font-size:18px;margin-bottom:12px}
+#sobre .s-ac-title{font-family:var(--fd);font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--white);margin-bottom:8px}
+#sobre .s-ac-desc{font-size:11.5px;color:var(--gray);line-height:1.6}
+
+@media(max-width:900px){
+  #sobre .s-inner{grid-template-columns:1fr;overflow-y:auto;padding:32px 24px;gap:32px}
+  #sobre .s-left{padding-right:0;border-right:none;border-bottom:1px solid var(--border);padding-bottom:32px}
+  #sobre .s-right{margin-left:0;max-height:none}
+  #sobre .s-card{width:95vw;height:92vh;border-radius:20px}
+}
 
 /* METODOLOGIA */
 #metodologia{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -352,44 +444,62 @@ footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-i
 
 <!-- SOBRE -->
 <section id="sobre">
-  <div class="container">
-    <div class="about-grid">
-      <div>
+  <div class="s-grain"></div>
+  <div class="s-grid"></div>
+
+  <!-- Background headline — blurs away as card rises -->
+  <div class="s-bg" id="s-bg">
+    <div class="sec-lbl" data-i18n="sobre.lbl">SOBRE.ASCENDIX</div>
+    <span class="s-bg-h1" data-i18n="sobre.h1">SOFTWARE DE</span>
+    <span class="s-bg-h2" data-i18n="sobre.h2">MISSÃO CRÍTICA.</span>
+  </div>
+
+  <!-- Cinematic card -->
+  <div class="s-card" id="s-card">
+    <div class="s-sheen" id="s-sheen"></div>
+
+    <div class="s-inner">
+
+      <!-- LEFT — texto + KPIs -->
+      <div class="s-left" id="s-left">
         <div class="sec-lbl" data-i18n="sobre.lbl">SOBRE.ASCENDIX</div>
-        <div class="sec-h">
+        <div class="s-title">
           <span class="w" data-i18n="sobre.h1">SOFTWARE DE</span>
           <span class="m" data-i18n="sobre.h2">MISSÃO CRÍTICA.</span>
         </div>
-        <p class="about-p" data-i18n-html="sobre.p1">A Ascendix nasceu em Dezembro de 2025 com um princípio simples: <strong>código que funciona em produção, entregue dentro do prazo e do orçamento acordado.</strong></p>
-        <p class="about-p" data-i18n="sobre.p2">Trabalhamos com organizações que precisam de fiabilidade, não de promessas. Cada projeto combina engenharia rigorosa, documentação completa e suporte continuado.</p>
-        <div class="about-kpis">
-          <div class="kpi"><div class="kpi-v">3</div><div class="kpi-l" data-i18n="kpi.years">Anos de Engenharia</div></div>
-          <div class="kpi"><div class="kpi-v">100%</div><div class="kpi-l" data-i18n="kpi.code">Código Próprio</div></div>
-          <div class="kpi"><div class="kpi-v">24/7</div><div class="kpi-l" data-i18n="kpi.monitor">Monitorização</div></div>
+        <p class="s-p" data-i18n-html="sobre.p1">A Ascendix nasceu em Dezembro de 2025 com um princípio simples: <strong>código que funciona em produção, entregue dentro do prazo e do orçamento acordado.</strong></p>
+        <p class="s-p" data-i18n="sobre.p2">Trabalhamos com organizações que precisam de fiabilidade, não de promessas. Cada projeto combina engenharia rigorosa, documentação completa e suporte continuado.</p>
+        <div class="s-kpis" id="s-kpis">
+          <div class="s-kpi"><div class="s-kpi-v">3</div><div class="s-kpi-l" data-i18n="kpi.years">Anos de Engenharia</div></div>
+          <div class="s-kpi"><div class="s-kpi-v">100%</div><div class="s-kpi-l" data-i18n="kpi.code">Código Próprio</div></div>
+          <div class="s-kpi"><div class="s-kpi-v">24/7</div><div class="s-kpi-l" data-i18n="kpi.monitor">Monitorização</div></div>
         </div>
       </div>
-      <div class="about-cards">
-        <div class="acard">
-          <div class="acard-icon">🏗️</div>
-          <div class="acard-title" data-i18n="card1.t">Software como Infra-estrutura</div>
-          <p class="acard-desc" data-i18n="card1.d">Construímos plataformas que sustentam a operação 24/7. Cada release passa por revisão de arquitetura, testes automatizados e validação em pré-produção.</p>
+
+      <!-- RIGHT — 4 feature cards -->
+      <div class="s-right" id="s-right">
+        <div class="s-ac" id="sac1">
+          <div class="s-ac-icon">🏗️</div>
+          <div class="s-ac-title" data-i18n="card1.t">Software como Infra-estrutura</div>
+          <p class="s-ac-desc" data-i18n="card1.d">Construímos plataformas que sustentam a operação 24/7. Cada release passa por revisão de arquitetura, testes automatizados e validação em pré-produção.</p>
         </div>
-        <div class="acard">
-          <div class="acard-icon">🛡️</div>
-          <div class="acard-title" data-i18n="card2.t">Conformidade e Segurança</div>
-          <p class="acard-desc" data-i18n="card2.d">RGPD, encriptação em trânsito e em repouso, gestão de acessos por perfil e logs de auditoria imutáveis. Sem atalhos.</p>
+        <div class="s-ac" id="sac2">
+          <div class="s-ac-icon">🛡️</div>
+          <div class="s-ac-title" data-i18n="card2.t">Conformidade e Segurança</div>
+          <p class="s-ac-desc" data-i18n="card2.d">RGPD, encriptação em trânsito e em repouso, gestão de acessos por perfil e logs de auditoria imutáveis. Sem atalhos.</p>
         </div>
-        <div class="acard">
-          <div class="acard-icon">🔧</div>
-          <div class="acard-title" data-i18n="card3.t">Engenharia Rastreável</div>
-          <p class="acard-desc" data-i18n="card3.d">Git, code review obrigatório, ambientes isolados (dev / stage / prod) e pipelines CI/CD. Cada linha de código é auditável.</p>
+        <div class="s-ac" id="sac3">
+          <div class="s-ac-icon">🔧</div>
+          <div class="s-ac-title" data-i18n="card3.t">Engenharia Rastreável</div>
+          <p class="s-ac-desc" data-i18n="card3.d">Git, code review obrigatório, ambientes isolados (dev / stage / prod) e pipelines CI/CD. Cada linha de código é auditável.</p>
         </div>
-        <div class="acard">
-          <div class="acard-icon">🤝</div>
-          <div class="acard-title" data-i18n="card4.t">Suporte Contratualizado</div>
-          <p class="acard-desc" data-i18n="card4.d">SLA claro, tempos de resposta garantidos, relatórios mensais e plano de continuidade documentado e testado.</p>
+        <div class="s-ac" id="sac4">
+          <div class="s-ac-icon">🤝</div>
+          <div class="s-ac-title" data-i18n="card4.t">Suporte Contratualizado</div>
+          <p class="s-ac-desc" data-i18n="card4.d">SLA claro, tempos de resposta garantidos, relatórios mensais e plano de continuidade documentado e testado.</p>
         </div>
       </div>
+
     </div>
   </div>
 </section>
@@ -790,7 +900,78 @@ const lampObs = new IntersectionObserver(entries=>{
 const ctSec = document.getElementById('contacto');
 if(ctSec) lampObs.observe(ctSec);
 
-/* ── NAV ACTIVE ── */
+/* ── GSAP CINEMATIC — SOBRE ── */
+gsap.registerPlugin(ScrollTrigger);
+
+/* kill white pin-spacer */
+document.head.insertAdjacentHTML('beforeend','<style>.pin-spacer{background:#0D0D0D!important}</style>');
+
+(function() {
+  const sobre   = document.getElementById('sobre');
+  const sBg     = document.getElementById('s-bg');
+  const sCard   = document.getElementById('s-card');
+  const sLeft   = document.getElementById('s-left');
+  const sRight  = document.getElementById('s-right');
+  const sKpis   = document.getElementById('s-kpis');
+  const sAcs    = ['sac1','sac2','sac3','sac4'].map(id=>document.getElementById(id));
+
+  if (!sobre || !sCard) return;
+
+  const vw = window.innerWidth, vh = window.innerHeight;
+
+  /* initial states */
+  gsap.set(sCard,  { y: vh + 60 });
+  gsap.set(sLeft,  { x: -40, autoAlpha: 0 });
+  gsap.set(sRight, { x:  40, autoAlpha: 0 });
+  gsap.set(sKpis,  { y:  16, autoAlpha: 0 });
+  gsap.set(sAcs,   { y:  20, autoAlpha: 0, scale: 0.96 });
+
+  /* mouse sheen */
+  sobre.addEventListener('mousemove', e => {
+    const r = sCard.getBoundingClientRect();
+    sCard.style.setProperty('--mx', (e.clientX - r.left)+'px');
+    sCard.style.setProperty('--my', (e.clientY - r.top)+'px');
+  });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: sobre,
+      start: 'top top',
+      end: '+=3400',
+      pin: true,
+      pinSpacing: true,
+      scrub: 0.7,
+      anticipatePin: 1,
+    }
+  });
+
+  tl
+    /* FASE 1 — bg some e card sobe juntos */
+    .to(sBg,   { scale:1.06, filter:'blur(16px)', opacity:0, ease:'power2.out', duration:1 }, 0)
+    .to(sCard, { y:0, ease:'power2.out', duration:1 }, 0)
+
+    /* FASE 2 — expande E conteúdo entra AO MESMO TEMPO */
+    .to(sCard,  { width:'100%', height:'100%', borderRadius:'0px', ease:'power2.inOut', duration:1 })
+    .to(sLeft,  { x:0, autoAlpha:1, ease:'power3.out', duration:0.9 }, '-=1.0')
+    .to(sRight, { x:0, autoAlpha:1, ease:'power3.out', duration:0.9 }, '<')
+    .to(sKpis,  { y:0, autoAlpha:1, ease:'back.out(1.3)', duration:0.7 }, '-=0.6')
+    .to(sAcs,   { y:0, autoAlpha:1, stagger:0.08, ease:'back.out(1.2)', duration:0.7 }, '-=0.5')
+
+    /* FASE 3 — pausa para leitura */
+    .to({}, { duration: 2.5 })
+
+    /* FASE 4 — saída */
+    .to([sLeft, sRight, sKpis, sAcs], { autoAlpha:0, ease:'power2.in', duration:0.5 })
+    .to(sCard, {
+      width: vw < 768 ? '92vw' : '86vw',
+      height: vw < 768 ? '88vh' : '82vh',
+      borderRadius:'28px', ease:'power2.inOut', duration:0.8
+    }, '-=0.2')
+    .to(sCard, { y:-(vh + 80), ease:'power2.in', duration:0.7 });
+
+})();
+
+
 const secs=document.querySelectorAll('section[id]'), lnks=document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll',()=>{
   let cur=''; secs.forEach(s=>{if(window.scrollY>=s.offsetTop-80) cur=s.id;});
