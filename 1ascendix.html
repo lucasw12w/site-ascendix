@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASCENDIX · Engenharia · Software</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.0/build/spline-viewer.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+html,body{background:#0D0D0D}
+.pin-spacer{background:#0D0D0D!important}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0D0D;--bg2:#111111;--card:#161616;--border:#242424;
+  --yellow:#F5C400;--white:#FFFFFF;--gray:#888;--gray2:#4a4a4a;
+  --green:#22c55e;
+  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;--fm:'Space Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:var(--fb);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,13,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:54px;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white);flex-shrink:0}
+.logo-icon{color:var(--yellow);font-size:17px}
+.logo-text{display:flex;flex-direction:column;line-height:1.1}
+.logo-name{font-family:var(--fd);font-weight:900;font-size:16px;letter-spacing:.1em;color:var(--white)}
+.logo-sub{font-family:var(--fm);font-size:8.5px;letter-spacing:.14em;color:var(--gray);text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:24px;list-style:none}
+.nav-links a{font-family:var(--fm);font-size:10.5px;letter-spacing:.1em;color:var(--gray);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.nav-email{font-family:var(--fm);font-size:10px;color:var(--gray);text-decoration:none;transition:color .2s}
+.nav-email:hover{color:var(--white)}
+.btn{display:inline-block;font-family:var(--fm);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:none;transition:opacity .2s,border-color .2s}
+.btn-yellow{background:var(--yellow);color:#000;padding:10px 16px;font-weight:700}
+.btn-yellow:hover{opacity:.85}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--border);padding:10px 16px}
+.btn-outline:hover{border-color:var(--gray)}
+
+/* LANG SWITCHER */
+.lang-sw{display:flex;align-items:center;border:1px solid var(--border);overflow:hidden;flex-shrink:0}
+.lang-btn{font-family:var(--fm);font-size:10px;letter-spacing:.12em;padding:6px 12px;cursor:pointer;background:transparent;color:var(--gray);border:none;transition:background .2s,color .2s;text-transform:uppercase}
+.lang-btn.active{background:var(--yellow);color:#000;font-weight:700}
+.lang-sep{width:1px;background:var(--border);height:100%;align-self:stretch}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:54px;position:relative;overflow:hidden}
+.hero-main{padding:48px 40px 40px;max-width:1280px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center;flex:1}
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding-right:32px;z-index:2}
+.hero-robot{position:relative;height:400px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-robot spline-viewer{width:80%;height:80%;--spline-viewer-bg:transparent}
+.hero-robot::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 50%,rgba(245,196,0,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+.hero-robot::after{content:'';position:absolute;left:0;top:0;bottom:0;width:100px;background:linear-gradient(to right,var(--bg) 30%,transparent 100%);pointer-events:none;z-index:3}
+.tag-row{display:flex;align-items:center;gap:12px;font-family:var(--fm);font-size:10px;letter-spacing:.18em;color:var(--gray);text-transform:uppercase;margin-bottom:28px}
+.tag-dot{width:8px;height:8px;background:var(--yellow);flex-shrink:0}
+.hero-h{font-family:var(--fd);font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:-.01em;margin-bottom:32px}
+.hero-h .l1{display:block;font-size:clamp(40px,5.5vw,80px);color:var(--white)}
+.hero-h .l2{display:block;font-size:clamp(40px,5.5vw,80px);color:var(--yellow)}
+.hero-h .l3{display:block;font-size:clamp(40px,5.5vw,80px);color:var(--gray2)}
+.hero-desc{font-size:14.5px;color:var(--gray);max-width:460px;line-height:1.75;margin-bottom:36px}
+.hero-desc strong{color:var(--white)}
+.hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.available{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:9.5px;letter-spacing:.14em;color:var(--gray);text-transform:uppercase}
+.pulse{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* STATS BAR */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border)}
+.stat{padding:24px 40px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-lbl{font-family:var(--fm);font-size:9.5px;letter-spacing:.16em;color:var(--gray);text-transform:uppercase;margin-bottom:10px}
+.stat-val{font-family:var(--fd);font-weight:900;font-size:42px;line-height:1;color:var(--yellow)}
+.stat-track{height:2px;background:var(--border);margin-top:12px;overflow:hidden}
+.stat-fill{height:100%;background:var(--yellow);width:0;transition:width 1.8s cubic-bezier(.16,1,.3,1)}
+
+/* SECTIONS */
+section{padding:96px 0}
+.container{max-width:1280px;margin:0 auto;padding:0 40px}
+.sec-lbl{font-family:var(--fm);font-size:10px;letter-spacing:.18em;color:var(--gray2);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.sec-lbl::before{content:'//';color:var(--yellow);font-weight:700}
+.sec-h{font-family:var(--fd);font-weight:900;text-transform:uppercase;line-height:.93;letter-spacing:-.01em}
+.sec-h .w{display:block;font-size:clamp(40px,6vw,80px);color:var(--white)}
+.sec-h .m{display:block;font-size:clamp(40px,6vw,80px);color:var(--gray2)}
+.sec-h .y{display:block;font-size:clamp(40px,6vw,80px);color:var(--yellow)}
+
+/* SOBRE — Cinematic Scroll */
+#sobre{
+  position:relative;
+  height:100vh;
+  overflow:hidden;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+/* film grain */
+#sobre .s-grain{
+  position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.04;mix-blend-mode:overlay;
+  background:url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%25" height="100%25" filter="url(%23n)"/></svg>');
+}
+/* grid */
+#sobre .s-grid{
+  position:absolute;inset:0;z-index:0;opacity:.4;pointer-events:none;
+  background-size:60px 60px;
+  background-image:
+    linear-gradient(to right,rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(255,255,255,.04) 1px,transparent 1px);
+  mask-image:radial-gradient(ellipse at center,black 0%,transparent 70%);
+}
+/* background headline — zooms/blurs away as card rises */
+#sobre .s-bg{
+  position:absolute;inset:0;z-index:2;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;pointer-events:none;
+  will-change:transform,filter,opacity;
+}
+#sobre .s-bg .sec-lbl{justify-content:center;margin-bottom:24px}
+#sobre .s-bg-h1{
+  font-family:var(--fd);font-weight:900;text-transform:uppercase;
+  font-size:clamp(56px,9vw,120px);line-height:.92;letter-spacing:-.02em;
+  color:var(--white);display:block;
+}
+#sobre .s-bg-h2{
+  font-family:var(--fd);font-weight:900;text-transform:uppercase;
+  font-size:clamp(56px,9vw,120px);line-height:.92;letter-spacing:-.02em;
+  color:var(--gray2);display:block;
+}
+/* the cinematic card */
+#sobre .s-card{
+  position:absolute;z-index:10;
+  width:88vw;height:86vh;
+  border-radius:28px;
+  background:linear-gradient(145deg,#111700 0%,#0D0D0D 60%,#0a0d00 100%);
+  border:1px solid rgba(245,196,0,.12);
+  box-shadow:
+    0 60px 120px -20px rgba(0,0,0,.95),
+    0 30px 60px -20px rgba(0,0,0,.8),
+    inset 0 1px 2px rgba(245,196,0,.08),
+    inset 0 -2px 4px rgba(0,0,0,.8);
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  will-change:transform,width,height,border-radius;
+}
+/* mouse sheen */
+#sobre .s-sheen{
+  position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+  background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),rgba(245,196,0,.05) 0%,transparent 40%);
+  mix-blend-mode:screen;
+}
+/* yellow top accent line on card */
+#sobre .s-card::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(to right,transparent,rgba(245,196,0,.4),transparent);
+  z-index:2;
+}
+/* card inner grid */
+#sobre .s-inner{
+  position:relative;z-index:5;
+  width:100%;height:100%;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:0;
+  padding:48px 56px;
+  max-width:1280px;margin:0 auto;
+}
+/* LEFT */
+#sobre .s-left{display:flex;flex-direction:column;justify-content:center;padding-right:48px;border-right:1px solid var(--border)}
+#sobre .s-left .sec-lbl{margin-bottom:16px}
+#sobre .s-title{font-family:var(--fd);font-weight:900;text-transform:uppercase;line-height:.9;letter-spacing:-.01em;margin-bottom:24px}
+#sobre .s-title .w{display:block;font-size:clamp(36px,4vw,58px);color:var(--white)}
+#sobre .s-title .m{display:block;font-size:clamp(36px,4vw,58px);color:var(--gray2)}
+#sobre .s-p{color:var(--gray);font-size:13.5px;line-height:1.8;margin-bottom:12px}
+#sobre .s-p strong{color:var(--white)}
+#sobre .s-kpis{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);margin-top:32px}
+#sobre .s-kpi{padding:16px 18px;border-right:1px solid var(--border)}
+#sobre .s-kpi:last-child{border-right:none}
+#sobre .s-kpi-v{font-family:var(--fd);font-weight:900;font-size:30px;color:var(--yellow);line-height:1}
+#sobre .s-kpi-l{font-family:var(--fm);font-size:8px;letter-spacing:.15em;color:var(--gray);text-transform:uppercase;margin-top:4px}
+/* RIGHT */
+#sobre .s-right{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);padding-left:0;height:100%;max-height:420px;align-self:center;margin-left:48px}
+#sobre .s-ac{background:#0f0f0f;padding:24px 22px;display:flex;flex-direction:column}
+#sobre .s-ac-icon{font-size:18px;margin-bottom:12px}
+#sobre .s-ac-title{font-family:var(--fd);font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--white);margin-bottom:8px}
+#sobre .s-ac-desc{font-size:11.5px;color:var(--gray);line-height:1.6}
+
+@media(max-width:900px){
+  #sobre .s-inner{grid-template-columns:1fr;overflow-y:auto;padding:32px 24px;gap:32px}
+  #sobre .s-left{padding-right:0;border-right:none;border-bottom:1px solid var(--border);padding-bottom:32px}
+  #sobre .s-right{margin-left:0;max-height:none}
+  #sobre .s-card{width:95vw;height:92vh;border-radius:20px}
+}
+
+/* METODOLOGIA */
+#metodologia{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.method-top{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:56px}
+.method-desc{font-size:14.5px;color:var(--gray);line-height:1.8;padding-top:60px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--border)}
+.step{padding:26px 20px;border-right:1px solid var(--border)}
+.step:last-child{border-right:none}
+.step-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.step-num{font-family:var(--fm);font-size:12px;color:var(--yellow);font-weight:700}
+.step-time{font-family:var(--fm);font-size:8px;color:var(--gray2);letter-spacing:.1em;text-transform:uppercase;text-align:right;line-height:1.4}
+.step-title{font-family:var(--fd);font-weight:800;font-size:19px;letter-spacing:.06em;text-transform:uppercase;color:var(--white);margin-bottom:14px}
+.step-list{list-style:none}
+.step-list li{font-size:11.5px;color:var(--gray);line-height:1.55;margin-bottom:8px;padding-left:14px;position:relative}
+.step-list li::before{content:'▸';position:absolute;left:0;color:var(--yellow);font-size:9px;top:2px}
+
+/* SERVIÇOS */
+#servicos{background:var(--bg)}
+.srv-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:64px}
+.srv-intro-desc{font-size:14.5px;color:var(--gray);line-height:1.8;padding-top:50px}
+.srv-row{display:grid;grid-template-columns:80px 1fr 1fr;gap:32px;align-items:start;padding:28px 0;border-bottom:1px solid var(--border);transition:background .2s}
+.srv-row:first-child{border-top:1px solid var(--border)}
+.srv-row:hover{background:rgba(245,196,0,.03)}
+.srv-row-num{font-family:var(--fm);font-size:13px;color:var(--yellow);font-weight:700;padding-top:4px}
+.srv-row-title{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--white);line-height:1.1}
+.srv-row-tag{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gray2);border:1px solid var(--border);padding:4px 10px;margin-top:8px}
+.srv-row-desc{font-size:13px;color:var(--gray);line-height:1.7;padding-top:4px}
+
+/* FAQ */
+#faq{background:var(--bg2);border-top:1px solid var(--border)}
+.faq-layout{display:grid;grid-template-columns:1fr 2fr;gap:80px;align-items:start}
+.faq-note{font-size:13px;color:var(--gray);margin-top:20px;line-height:1.7}
+.faq-note a{color:var(--yellow);text-decoration:none}
+.faq-list{border-top:1px solid var(--border)}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;align-items:center;gap:16px;padding:18px 0;cursor:pointer}
+.faq-q-num{font-family:var(--fm);font-size:10px;color:var(--gray2);flex-shrink:0;width:20px}
+.faq-q-txt{font-family:var(--fd);font-weight:800;font-size:15px;letter-spacing:.07em;text-transform:uppercase;color:var(--white);flex:1;transition:color .2s}
+.faq-q:hover .faq-q-txt{color:var(--yellow)}
+.faq-chevron{font-size:16px;color:var(--gray);flex-shrink:0;transition:transform .28s,color .2s}
+.faq-item.open .faq-chevron{transform:rotate(180deg);color:var(--yellow)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-a-inner{padding:0 0 20px 36px;font-size:13.5px;color:var(--gray);line-height:1.8}
+
+/* CONTACTO — Lamp Effect */
+#contacto{
+  position:relative;background:var(--bg);border-top:1px solid var(--border);
+  overflow:hidden;min-height:80vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+/* blur overlay */
+.ct-blur{position:absolute;top:0;left:0;right:0;height:180px;background:transparent;backdrop-filter:blur(6px);opacity:.08;z-index:1;pointer-events:none}
+/* central big glow */
+.ct-glow{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%) translateY(-30%);
+  width:480px;height:160px;
+  background:rgba(255,255,255,.45);border-radius:50%;filter:blur(64px);
+  z-index:2;pointer-events:none;
+  opacity:0;transition:opacity .8s .3s
+}
+/* small sharp glow */
+.ct-glow-sm{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%) translateY(-20%);
+  width:80px;height:160px;
+  background:rgba(255,255,255,.55);border-radius:50%;filter:blur(28px);
+  z-index:3;pointer-events:none;
+  transition:width .8s .3s ease-in-out,opacity .8s .3s
+}
+/* expanding top line */
+.ct-line{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%) translateY(8px);
+  height:2px;background:rgba(255,255,255,.75);
+  z-index:4;pointer-events:none;
+  width:120px;transition:width .8s .3s ease-in-out
+}
+/* LEFT cone */
+.ct-cone-l{
+  position:absolute;top:0;right:50%;height:240px;
+  background:conic-gradient(from 70deg at center top,rgba(255,255,255,.35),transparent 60%,transparent);
+  width:120px;opacity:.5;
+  z-index:1;pointer-events:none;
+  transition:width .8s .3s ease-in-out,opacity .8s .3s;
+  overflow:hidden;
+}
+.ct-cone-l::before{content:'';position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(to top,var(--bg),transparent);z-index:2}
+.ct-cone-l::after{content:'';position:absolute;top:0;left:0;width:120px;height:100%;background:linear-gradient(to right,var(--bg),transparent);z-index:2}
+/* RIGHT cone */
+.ct-cone-r{
+  position:absolute;top:0;left:50%;height:240px;
+  background:conic-gradient(from 290deg at center top,transparent 40%,rgba(255,255,255,.35));
+  width:120px;opacity:.5;
+  z-index:1;pointer-events:none;
+  transition:width .8s .3s ease-in-out,opacity .8s .3s;
+  overflow:hidden;
+}
+.ct-cone-r::before{content:'';position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(to top,var(--bg),transparent);z-index:2}
+.ct-cone-r::after{content:'';position:absolute;top:0;right:0;width:120px;height:100%;background:linear-gradient(to left,var(--bg),transparent);z-index:2}
+
+/* ACTIVE state — triggered by IntersectionObserver */
+#contacto.lamp-on .ct-glow{opacity:1}
+#contacto.lamp-on .ct-glow-sm{width:200px;opacity:1}
+#contacto.lamp-on .ct-line{width:520px}
+#contacto.lamp-on .ct-cone-l{width:480px;opacity:1}
+#contacto.lamp-on .ct-cone-r{width:480px;opacity:1}
+
+/* Content */
+.contact-inner{
+  position:relative;z-index:10;
+  text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+  padding:80px 40px 96px;
+  width:100%;max-width:700px;
+  transform:translateY(40px);opacity:0;
+  transition:transform .8s .5s ease,opacity .8s .5s
+}
+#contacto.lamp-on .contact-inner{transform:translateY(0);opacity:1}
+.contact-desc{font-size:15px;color:var(--gray);line-height:1.8;margin-top:28px;margin-bottom:48px;max-width:480px}
+.contact-desc strong{color:var(--white)}
+.contact-channels{display:flex;flex-direction:column;gap:1px;width:100%;max-width:560px}
+.channel{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:var(--card);border:1px solid var(--border);text-decoration:none;transition:border-color .2s,background .2s,transform .2s}
+.channel:hover{border-color:var(--yellow);background:rgba(245,196,0,.05);transform:translateX(4px)}
+.channel-left{display:flex;align-items:center;gap:16px}
+.channel-icon{font-size:18px;width:36px;text-align:center;color:var(--yellow)}
+.channel-lbl{font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gray2);margin-bottom:4px}
+.channel-val{font-family:var(--fd);font-weight:800;font-size:20px;color:var(--white);letter-spacing:.03em}
+.channel-arrow{font-family:var(--fm);font-size:11px;color:var(--yellow);letter-spacing:.1em}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:28px 40px;display:flex;align-items:center;justify-content:space-between}
+.footer-copy{font-family:var(--fm);font-size:10px;color:var(--gray2);letter-spacing:.1em}
+.footer-right{font-family:var(--fm);font-size:10px;color:var(--gray2)}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nav-links,.nav-email{display:none}
+  .about-grid,.method-top,.faq-layout,.srv-intro{grid-template-columns:1fr}
+  .about-cards{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .stats-bar{grid-template-columns:1fr 1fr}
+  .stat{border-bottom:1px solid var(--border)}
+  .srv-row{grid-template-columns:48px 1fr}
+  .srv-row-desc{grid-column:2}
+  /* Hero em tablet: robô por baixo */
+  .hero-main{grid-template-columns:1fr;padding:48px 32px 0}
+  .hero-left{padding-right:0}
+  .hero-robot{height:420px;margin-top:0}
+  .hero-robot::after{display:none}
+}
+@media(max-width:600px){
+  .steps{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:1fr}
+  nav{padding:0 16px}
+  .container{padding:0 20px}
+  .hero-main{padding:36px 20px 0}
+  .hero-robot{height:320px}
+  footer{flex-direction:column;gap:8px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <span class="logo-icon">⚙</span>
+    <div class="logo-text">
+      <span class="logo-name">ASCENDIX</span>
+      <span class="logo-sub" data-i18n="logo.sub">Engenharia · Software</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sobre"      data-i18n="nav.sobre">Sobre</a></li>
+    <li><a href="#metodologia" data-i18n="nav.met">Metodologia</a></li>
+    <li><a href="#servicos"   data-i18n="nav.srv">Serviços</a></li>
+    <li><a href="#faq"        data-i18n="nav.faq">FAQ</a></li>
+    <li><a href="#contacto"   data-i18n="nav.contact">Contacto</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="mailto:comercial@ascendixeng.pt" class="nav-email">comercial@ascendixeng.pt</a>
+
+    <!-- LANGUAGE SWITCHER -->
+    <div class="lang-sw">
+      <button class="lang-btn active" id="btn-pt" onclick="setLang('pt')">PT</button>
+      <div class="lang-sep"></div>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+
+    <a href="#contacto" class="btn btn-yellow" data-i18n="nav.proposta">Pedir Proposta</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-main">
+
+    <!-- LEFT — texto -->
+    <div class="hero-left">
+      <div class="tag-row">
+        <span class="tag-dot"></span>
+        <span data-i18n="hero.tag">ENGENHARIA DE SOFTWARE · SISTEMAS CRÍTICOS · SLA CONTRATUAL · PORTUGAL</span>
+      </div>
+      <div class="hero-h">
+        <span class="l1" data-i18n="hero.l1">ENGENHARIA DE SOFTWARE</span>
+        <span class="l2" data-i18n="hero.l2">PARA OPERAÇÕES EXIGENTES.</span>
+        <span class="l3" data-i18n="hero.l3">SISTEMAS QUE NÃO PARAM.</span>
+      </div>
+      <p class="hero-desc" data-i18n-html="hero.desc">
+        A <strong>Ascendix Engenharia</strong> projeta, desenvolve e opera plataformas de missão crítica. Código limpo, arquitetura sólida, entregas previsíveis — sob SLA, com suporte e conformidade RGPD.
+      </p>
+      <div class="hero-actions">
+        <a href="#servicos" class="btn btn-yellow" style="padding:13px 26px;font-size:11px" data-i18n="hero.btn1">Os Nossos Serviços →</a>
+        <a href="#contacto" class="btn btn-outline" style="padding:13px 26px;font-size:11px" data-i18n="hero.btn2">Pedir Proposta</a>
+        <span class="available"><span class="pulse"></span><span data-i18n="hero.available">Disponível para novos projetos</span></span>
+      </div>
+    </div>
+
+    <!-- RIGHT — robô 3D interativo -->
+    <div class="hero-robot">
+      <spline-viewer
+        url="https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode"
+        style="width:100%;height:100%;background:transparent">
+      </spline-viewer>
+    </div>
+
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-lbl" data-i18n="stat.uptime">Uptime em Produção</div>
+      <div class="stat-val"><span class="ctr" data-t="99.3" data-d="1">0</span>%</div>
+      <div class="stat-track"><div class="stat-fill" data-w="99.3"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-lbl" data-i18n="stat.tx">Transações Processadas</div>
+      <div class="stat-val"><span class="ctr" data-t="24318" data-d="0">0</span></div>
+      <div class="stat-track"><div class="stat-fill" data-w="42"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-lbl" data-i18n="stat.clients">Clientes Ativos</div>
+      <div class="stat-val"><span class="ctr" data-t="13" data-d="0">0</span></div>
+      <div class="stat-track"><div class="stat-fill" data-w="65"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-lbl" data-i18n="stat.routines">Rotinas Automatizadas</div>
+      <div class="stat-val"><span class="ctr" data-t="89" data-d="0">0</span></div>
+      <div class="stat-track"><div class="stat-fill" data-w="35"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="s-grain"></div>
+  <div class="s-grid"></div>
+
+  <!-- Background headline — blurs away as card rises -->
+  <div class="s-bg" id="s-bg">
+    <div class="sec-lbl" data-i18n="sobre.lbl">SOBRE.ASCENDIX</div>
+    <span class="s-bg-h1" data-i18n="sobre.h1">SOFTWARE DE</span>
+    <span class="s-bg-h2" data-i18n="sobre.h2">MISSÃO CRÍTICA.</span>
+  </div>
+
+  <!-- Cinematic card -->
+  <div class="s-card" id="s-card">
+    <div class="s-sheen" id="s-sheen"></div>
+
+    <div class="s-inner">
+
+      <!-- LEFT — texto + KPIs -->
+      <div class="s-left" id="s-left">
+        <div class="sec-lbl" data-i18n="sobre.lbl">SOBRE.ASCENDIX</div>
+        <div class="s-title">
+          <span class="w" data-i18n="sobre.h1">SOFTWARE DE</span>
+          <span class="m" data-i18n="sobre.h2">MISSÃO CRÍTICA.</span>
+        </div>
+        <p class="s-p" data-i18n-html="sobre.p1">A Ascendix nasceu em Dezembro de 2025 com um princípio simples: <strong>código que funciona em produção, entregue dentro do prazo e do orçamento acordado.</strong></p>
+        <p class="s-p" data-i18n="sobre.p2">Trabalhamos com organizações que precisam de fiabilidade, não de promessas. Cada projeto combina engenharia rigorosa, documentação completa e suporte continuado.</p>
+        <div class="s-kpis" id="s-kpis">
+          <div class="s-kpi"><div class="s-kpi-v">3</div><div class="s-kpi-l" data-i18n="kpi.years">Anos de Engenharia</div></div>
+          <div class="s-kpi"><div class="s-kpi-v">100%</div><div class="s-kpi-l" data-i18n="kpi.code">Código Próprio</div></div>
+          <div class="s-kpi"><div class="s-kpi-v">24/7</div><div class="s-kpi-l" data-i18n="kpi.monitor">Monitorização</div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT — 4 feature cards -->
+      <div class="s-right" id="s-right">
+        <div class="s-ac" id="sac1">
+          <div class="s-ac-icon">🏗️</div>
+          <div class="s-ac-title" data-i18n="card1.t">Software como Infra-estrutura</div>
+          <p class="s-ac-desc" data-i18n="card1.d">Construímos plataformas que sustentam a operação 24/7. Cada release passa por revisão de arquitetura, testes automatizados e validação em pré-produção.</p>
+        </div>
+        <div class="s-ac" id="sac2">
+          <div class="s-ac-icon">🛡️</div>
+          <div class="s-ac-title" data-i18n="card2.t">Conformidade e Segurança</div>
+          <p class="s-ac-desc" data-i18n="card2.d">RGPD, encriptação em trânsito e em repouso, gestão de acessos por perfil e logs de auditoria imutáveis. Sem atalhos.</p>
+        </div>
+        <div class="s-ac" id="sac3">
+          <div class="s-ac-icon">🔧</div>
+          <div class="s-ac-title" data-i18n="card3.t">Engenharia Rastreável</div>
+          <p class="s-ac-desc" data-i18n="card3.d">Git, code review obrigatório, ambientes isolados (dev / stage / prod) e pipelines CI/CD. Cada linha de código é auditável.</p>
+        </div>
+        <div class="s-ac" id="sac4">
+          <div class="s-ac-icon">🤝</div>
+          <div class="s-ac-title" data-i18n="card4.t">Suporte Contratualizado</div>
+          <p class="s-ac-desc" data-i18n="card4.d">SLA claro, tempos de resposta garantidos, relatórios mensais e plano de continuidade documentado e testado.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- METODOLOGIA -->
+<section id="metodologia">
+  <div class="container">
+    <div class="method-top">
+      <div>
+        <div class="sec-lbl" data-i18n="met.lbl">METODOLOGIA.ENTREGA</div>
+        <div class="sec-h">
+          <span class="w" data-i18n="met.h1">MÉTODO ESTRUTURADO.</span>
+          <span class="m" data-i18n="met.h2">ENTREGAS PREVISÍVEIS.</span>
+        </div>
+      </div>
+      <p class="method-desc" data-i18n="met.desc">Cinco fases com entregáveis documentados em cada uma. Sem caixas pretas, sem surpresas no orçamento. Iteramos em ciclos curtos para que veja valor desde a segunda semana.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-hdr"><span class="step-num">01</span><span class="step-time" data-i18n="s1.time">1–2<br>Semanas</span></div>
+        <div class="step-title" data-i18n="s1.title">Descoberta</div>
+        <ul class="step-list">
+          <li data-i18n="s1.l1">Workshops com operação e gestão</li>
+          <li data-i18n="s1.l2">Mapeamento de processos (AS-IS)</li>
+          <li data-i18n="s1.l3">Identificação de KPIs e fricções</li>
+          <li data-i18n="s1.l4">Documento de visão assinado</li>
+        </ul>
+      </div>
+      <div class="step">
+        <div class="step-hdr"><span class="step-num">02</span><span class="step-time" data-i18n="s2.time">1–3<br>Semanas</span></div>
+        <div class="step-title" data-i18n="s2.title">Arquitetura</div>
+        <ul class="step-list">
+          <li data-i18n="s2.l1">Modelo de dados e fluxos de eventos</li>
+          <li data-i18n="s2.l2">Decisões tecnológicas (ADRs)</li>
+          <li data-i18n="s2.l3">Plano de integrações</li>
+          <li data-i18n="s2.l4">Estimativa cloud e custos</li>
+        </ul>
+      </div>
+      <div class="step">
+        <div class="step-hdr"><span class="step-num">03</span><span class="step-time" data-i18n="s3.time">Sprints de<br>2 Semanas</span></div>
+        <div class="step-title" data-i18n="s3.title">Desenvolvimento</div>
+        <ul class="step-list">
+          <li data-i18n="s3.l1">Entregas incrementais validadas</li>
+          <li data-i18n="s3.l2">Code review e testes automáticos</li>
+          <li data-i18n="s3.l3">Demo quinzenal ao cliente</li>
+          <li data-i18n="s3.l4">Documentação técnica contínua</li>
+        </ul>
+      </div>
+      <div class="step">
+        <div class="step-hdr"><span class="step-num">04</span><span class="step-time" data-i18n="s4.time">2–4<br>Semanas</span></div>
+        <div class="step-title" data-i18n="s4.title">Go-Live</div>
+        <ul class="step-list">
+          <li data-i18n="s4.l1">Migração e ensaios de carga</li>
+          <li data-i18n="s4.l2">Formação de utilizadores</li>
+          <li data-i18n="s4.l3">Plano de rollback documentado</li>
+          <li data-i18n="s4.l4">Acompanhamento nos primeiros dias</li>
+        </ul>
+      </div>
+      <div class="step">
+        <div class="step-hdr"><span class="step-num">05</span><span class="step-time" data-i18n="s5.time">Contínuo</span></div>
+        <div class="step-title" data-i18n="s5.title">Operação</div>
+        <ul class="step-list">
+          <li data-i18n="s5.l1">Monitorização 24/7 e alertas</li>
+          <li data-i18n="s5.l2">SLA e relatórios mensais</li>
+          <li data-i18n="s5.l3">Roadmap de evolução</li>
+          <li data-i18n="s5.l4">Auditorias de segurança</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIÇOS -->
+<section id="servicos">
+  <div class="container">
+    <div class="srv-intro">
+      <div>
+        <div class="sec-lbl" data-i18n="srv.lbl">SERVIÇOS.ENTREGÁVEIS</div>
+        <div class="sec-h">
+          <span class="w" data-i18n="srv.h1">O QUE FAZEMOS,</span>
+          <span class="m" data-i18n="srv.h2">SEM RODEIOS.</span>
+        </div>
+      </div>
+      <p class="srv-intro-desc" data-i18n="srv.desc">Engenharia de software do princípio ao fim — arquitetura, código, integrações, cloud, segurança e suporte. Sem subcontratação, sem surpresas.</p>
+    </div>
+    <div class="srv-rows">
+      <div class="srv-row">
+        <div class="srv-row-num">01</div>
+        <div>
+          <div class="srv-row-title" data-i18n="r1.t">Desenvolvimento à Medida</div>
+          <div class="srv-row-tag" data-i18n="r1.tag">Web · Mobile · API · Backend</div>
+        </div>
+        <div class="srv-row-desc" data-i18n="r1.d">Aplicações web e mobile construídas sobre os requisitos reais do negócio. Frontend reativo, backend robusto, APIs bem documentadas e testes automatizados em cada sprint.</div>
+      </div>
+      <div class="srv-row">
+        <div class="srv-row-num">02</div>
+        <div>
+          <div class="srv-row-title" data-i18n="r2.t">Arquitetura de Sistemas</div>
+          <div class="srv-row-tag" data-i18n="r2.tag">Design · ADRs · Escalabilidade</div>
+        </div>
+        <div class="srv-row-desc" data-i18n="r2.d">Definição da estrutura técnica antes de escrever a primeira linha — modelo de dados, fluxos de eventos, decisões documentadas e estimativa de custos cloud.</div>
+      </div>
+      <div class="srv-row">
+        <div class="srv-row-num">03</div>
+        <div>
+          <div class="srv-row-title" data-i18n="r3.t">Integrações e APIs</div>
+          <div class="srv-row-tag" data-i18n="r3.tag">REST · GraphQL · Webhooks · ERP</div>
+        </div>
+        <div class="srv-row-desc" data-i18n="r3.d">Conexão entre sistemas — ERPs, contabilidades, meios de pagamento e sistemas legados. Documentação OpenAPI incluída e testes de contrato em cada endpoint.</div>
+      </div>
+      <div class="srv-row">
+        <div class="srv-row-num">04</div>
+        <div>
+          <div class="srv-row-title" data-i18n="r4.t">Cloud e DevOps</div>
+          <div class="srv-row-tag" data-i18n="r4.tag">AWS · Azure · GCP · CI/CD · IaC</div>
+        </div>
+        <div class="srv-row-desc" data-i18n="r4.d">Infraestrutura como código, pipelines CI/CD, ambientes isolados por projeto e monitorização com alertas proactivos. Cada deploy é rastreável e reversível.</div>
+      </div>
+      <div class="srv-row">
+        <div class="srv-row-num">05</div>
+        <div>
+          <div class="srv-row-title" data-i18n="r5.t">Segurança e Conformidade</div>
+          <div class="srv-row-tag" data-i18n="r5.tag">RGPD · OAuth 2.0 · Auditoria · RBAC</div>
+        </div>
+        <div class="srv-row-desc" data-i18n="r5.d">Autenticação robusta, gestão de acessos por perfil, encriptação AES-256, logs imutáveis e DPA assinado. Conformidade RGPD de ponta a ponta.</div>
+      </div>
+      <div class="srv-row">
+        <div class="srv-row-num">06</div>
+        <div>
+          <div class="srv-row-title" data-i18n="r6.t">Suporte e Operação</div>
+          <div class="srv-row-tag" data-i18n="r6.tag">SLA · 24/7 · Relatórios · Roadmap</div>
+        </div>
+        <div class="srv-row-desc" data-i18n="r6.d">Contratos de suporte com tempos de resposta garantidos, monitorização contínua, relatórios mensais e evolução do produto sob roadmap co-criado com o cliente.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="faq-layout">
+      <div>
+        <div class="sec-lbl" data-i18n="faq.lbl">PERGUNTAS.FREQUENTES</div>
+        <div class="sec-h">
+          <span class="w" data-i18n="faq.h1">PERGUNTAS</span>
+          <span class="m" data-i18n="faq.h2">FREQUENTES.</span>
+        </div>
+        <p class="faq-note" data-i18n-html="faq.note">Não encontrou o que procurava? Escreva para <a href="mailto:comercial@ascendixeng.pt">comercial@ascendixeng.pt</a>.</p>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-num">01</span><span class="faq-q-txt" data-i18n="q1.q">Com que tipo de empresas trabalham?</span><span class="faq-chevron">⌄</span></div>
+          <div class="faq-a"><div class="faq-a-inner" data-i18n="q1.a">Trabalhamos com PMEs e médias empresas que precisam de software feito à medida — em qualquer setor. O foco é em operações onde a fiabilidade é crítica e as soluções de prateleira não chegam.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-num">02</span><span class="faq-q-txt" data-i18n="q2.q">O software é desenvolvido à medida ou é um produto fechado?</span><span class="faq-chevron">⌄</span></div>
+          <div class="faq-a"><div class="faq-a-inner" data-i18n="q2.a">Totalmente à medida. Não há produto de prateleira nem licenças recorrentes forçadas. Entregamos código que fica na sua organização — versionado, documentado e com conhecimento transferido.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-num">03</span><span class="faq-q-txt" data-i18n="q3.q">Quanto tempo demora um projeto típico?</span><span class="faq-chevron">⌄</span></div>
+          <div class="faq-a"><div class="faq-a-inner" data-i18n="q3.a">Entre 8 e 20 semanas dependendo da complexidade. Os primeiros módulos funcionais chegam na terceira semana, com demonstrações quinzenais ao cliente.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-num">04</span><span class="faq-q-txt" data-i18n="q4.q">Como funciona o suporte depois do Go-Live?</span><span class="faq-chevron">⌄</span></div>
+          <div class="faq-a"><div class="faq-a-inner" data-i18n="q4.a">Todos os projetos incluem SLA definido com tempos de resposta garantidos, monitorização proactiva e relatórios mensais de operação. Não desaparecemos depois da entrega.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-num">05</span><span class="faq-q-txt" data-i18n="q5.q">Os dados cumprem o RGPD?</span><span class="faq-chevron">⌄</span></div>
+          <div class="faq-a"><div class="faq-a-inner" data-i18n="q5.a">Sim. Infraestrutura europeia, encriptação AES-256, RBAC, logs de auditoria imutáveis e DPA assinado. Conformidade RGPD é um requisito de projeto, não um extra.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-num">06</span><span class="faq-q-txt" data-i18n="q6.q">Conseguem integrar com os nossos sistemas atuais?</span><span class="faq-chevron">⌄</span></div>
+          <div class="faq-a"><div class="faq-a-inner" data-i18n="q6.a">Sim. A fase de Arquitetura inclui o mapeamento completo de todas as integrações. Temos experiência com SAP, Primavera, PHC, Sage e a maioria dos sistemas portugueses via APIs ou SAF-T.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-num">07</span><span class="faq-q-txt" data-i18n="q7.q">Quanto custa?</span><span class="faq-chevron">⌄</span></div>
+          <div class="faq-a"><div class="faq-a-inner" data-i18n="q7.a">Após a fase de Descoberta apresentamos uma proposta com preço fixo por fase — sem estimativas vagas. A Descoberta em si é remunerada e entrega documentos concretos, independentemente de o projeto avançar.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+
+  <!-- Lamp layers -->
+  <div class="ct-blur"></div>
+  <div class="ct-glow"></div>
+  <div class="ct-glow-sm"></div>
+  <div class="ct-line"></div>
+  <div class="ct-cone-l"></div>
+  <div class="ct-cone-r"></div>
+
+  <!-- Content -->
+  <div class="contact-inner">
+
+    <div class="sec-lbl" data-i18n="ct.lbl" style="justify-content:center">CONTACTO.DIRETO</div>
+
+    <div class="sec-h" style="text-align:center;margin-top:8px">
+      <span class="w" data-i18n="ct.h1">VAMOS</span>
+      <span class="y" data-i18n="ct.h2">FALAR.</span>
+    </div>
+
+    <p class="contact-desc" data-i18n-html="ct.desc">
+      Partilhe o desafio que enfrenta. Em <strong>48 horas</strong> respondemos com uma análise inicial sem compromisso.
+    </p>
+
+    <div class="contact-channels">
+      <a href="mailto:comercial@ascendixeng.pt" class="channel">
+        <div class="channel-left">
+          <div class="channel-icon">✉</div>
+          <div>
+            <div class="channel-lbl" data-i18n="ct.email-lbl">Email</div>
+            <div class="channel-val">comercial@ascendixeng.pt</div>
+          </div>
+        </div>
+        <div class="channel-arrow" data-i18n="ct.email-arrow">ESCREVER →</div>
+      </a>
+      <a href="tel:+351936334424" class="channel">
+        <div class="channel-left">
+          <div class="channel-icon">☎</div>
+          <div>
+            <div class="channel-lbl" data-i18n="ct.phone-lbl">Telefone / WhatsApp</div>
+            <div class="channel-val">+351 936 334 424</div>
+          </div>
+        </div>
+        <div class="channel-arrow" data-i18n="ct.phone-arrow">LIGAR →</div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy" data-i18n="footer.copy">© 2025 ASCENDIX ENGENHARIA · SOFTWARE, LDA. — TODOS OS DIREITOS RESERVADOS.</div>
+  <div class="footer-right">FEITO EM PORTUGAL 🇵🇹</div>
+</footer>
+
+<script>
+/* ── TRANSLATIONS ── */
+const T = {
+  pt: {
+    'logo.sub':'Engenharia · Software',
+    'nav.sobre':'Sobre','nav.met':'Metodologia','nav.srv':'Serviços','nav.faq':'FAQ','nav.contact':'Contacto','nav.proposta':'Pedir Proposta',
+    'hero.tag':'ENGENHARIA DE SOFTWARE · SISTEMAS CRÍTICOS · SLA CONTRATUAL · PORTUGAL',
+    'hero.l1':'ENGENHARIA DE SOFTWARE','hero.l2':'PARA OPERAÇÕES EXIGENTES.','hero.l3':'SISTEMAS QUE NÃO PARAM.',
+    'hero.desc':'A <strong>Ascendix Engenharia</strong> projeta, desenvolve e opera plataformas de missão crítica. Código limpo, arquitetura sólida, entregas previsíveis — sob SLA, com suporte e conformidade RGPD.',
+    'hero.btn1':'Os Nossos Serviços →','hero.btn2':'Pedir Proposta','hero.available':'Disponível para novos projetos',
+    'stat.uptime':'Uptime em Produção','stat.tx':'Transações Processadas','stat.clients':'Clientes Ativos','stat.routines':'Rotinas Automatizadas',
+    'sobre.lbl':'SOBRE.ASCENDIX','sobre.h1':'SOFTWARE DE','sobre.h2':'MISSÃO CRÍTICA.',
+    'sobre.p1':'A Ascendix nasceu em Dezembro de 2025 com um princípio simples: <strong>código que funciona em produção, entregue dentro do prazo e do orçamento acordado.</strong>',
+    'sobre.p2':'Trabalhamos com organizações que precisam de fiabilidade, não de promessas. Cada projeto combina engenharia rigorosa, documentação completa e suporte continuado.',
+    'kpi.years':'Anos de Engenharia','kpi.code':'Código Próprio','kpi.monitor':'Monitorização',
+    'card1.t':'Software como Infra-estrutura','card1.d':'Construímos plataformas que sustentam a operação 24/7. Cada release passa por revisão de arquitetura, testes automatizados e validação em pré-produção.',
+    'card2.t':'Conformidade e Segurança','card2.d':'RGPD, encriptação em trânsito e em repouso, gestão de acessos por perfil e logs de auditoria imutáveis. Sem atalhos.',
+    'card3.t':'Engenharia Rastreável','card3.d':'Git, code review obrigatório, ambientes isolados (dev / stage / prod) e pipelines CI/CD. Cada linha de código é auditável.',
+    'card4.t':'Suporte Contratualizado','card4.d':'SLA claro, tempos de resposta garantidos, relatórios mensais e plano de continuidade documentado e testado.',
+    'met.lbl':'METODOLOGIA.ENTREGA','met.h1':'MÉTODO ESTRUTURADO.','met.h2':'ENTREGAS PREVISÍVEIS.',
+    'met.desc':'Cinco fases com entregáveis documentados em cada uma. Sem caixas pretas, sem surpresas no orçamento. Iteramos em ciclos curtos para que veja valor desde a segunda semana.',
+    's1.time':'1–2<br>Semanas','s1.title':'Descoberta','s1.l1':'Workshops com operação e gestão','s1.l2':'Mapeamento de processos (AS-IS)','s1.l3':'Identificação de KPIs e fricções','s1.l4':'Documento de visão assinado',
+    's2.time':'1–3<br>Semanas','s2.title':'Arquitetura','s2.l1':'Modelo de dados e fluxos de eventos','s2.l2':'Decisões tecnológicas (ADRs)','s2.l3':'Plano de integrações','s2.l4':'Estimativa cloud e custos',
+    's3.time':'Sprints de<br>2 Semanas','s3.title':'Desenvolvimento','s3.l1':'Entregas incrementais validadas','s3.l2':'Code review e testes automáticos','s3.l3':'Demo quinzenal ao cliente','s3.l4':'Documentação técnica contínua',
+    's4.time':'2–4<br>Semanas','s4.title':'Go-Live','s4.l1':'Migração e ensaios de carga','s4.l2':'Formação de utilizadores','s4.l3':'Plano de rollback documentado','s4.l4':'Acompanhamento nos primeiros dias',
+    's5.time':'Contínuo','s5.title':'Operação','s5.l1':'Monitorização 24/7 e alertas','s5.l2':'SLA e relatórios mensais','s5.l3':'Roadmap de evolução','s5.l4':'Auditorias de segurança',
+    'srv.lbl':'SERVIÇOS.ENTREGÁVEIS','srv.h1':'O QUE FAZEMOS,','srv.h2':'SEM RODEIOS.',
+    'srv.desc':'Engenharia de software do princípio ao fim — arquitetura, código, integrações, cloud, segurança e suporte. Sem subcontratação, sem surpresas.',
+    'r1.t':'Desenvolvimento à Medida','r1.tag':'Web · Mobile · API · Backend','r1.d':'Aplicações web e mobile construídas sobre os requisitos reais do negócio. Frontend reativo, backend robusto, APIs bem documentadas e testes automatizados em cada sprint.',
+    'r2.t':'Arquitetura de Sistemas','r2.tag':'Design · ADRs · Escalabilidade','r2.d':'Definição da estrutura técnica antes de escrever a primeira linha — modelo de dados, fluxos de eventos, decisões documentadas e estimativa de custos cloud.',
+    'r3.t':'Integrações e APIs','r3.tag':'REST · GraphQL · Webhooks · ERP','r3.d':'Conexão entre sistemas — ERPs, contabilidades, meios de pagamento e sistemas legados. Documentação OpenAPI incluída e testes de contrato em cada endpoint.',
+    'r4.t':'Cloud e DevOps','r4.tag':'AWS · Azure · GCP · CI/CD · IaC','r4.d':'Infraestrutura como código, pipelines CI/CD, ambientes isolados por projeto e monitorização com alertas proactivos. Cada deploy é rastreável e reversível.',
+    'r5.t':'Segurança e Conformidade','r5.tag':'RGPD · OAuth 2.0 · Auditoria · RBAC','r5.d':'Autenticação robusta, gestão de acessos por perfil, encriptação AES-256, logs imutáveis e DPA assinado. Conformidade RGPD de ponta a ponta.',
+    'r6.t':'Suporte e Operação','r6.tag':'SLA · 24/7 · Relatórios · Roadmap','r6.d':'Contratos de suporte com tempos de resposta garantidos, monitorização contínua, relatórios mensais e evolução do produto sob roadmap co-criado com o cliente.',
+    'faq.lbl':'PERGUNTAS.FREQUENTES','faq.h1':'PERGUNTAS','faq.h2':'FREQUENTES.',
+    'faq.note':'Não encontrou o que procurava? Escreva para <a href="mailto:comercial@ascendixeng.pt">comercial@ascendixeng.pt</a>.',
+    'q1.q':'Com que tipo de empresas trabalham?','q1.a':'Trabalhamos com PMEs e médias empresas que precisam de software feito à medida — em qualquer setor. O foco é em operações onde a fiabilidade é crítica e as soluções de prateleira não chegam.',
+    'q2.q':'O software é desenvolvido à medida ou é um produto fechado?','q2.a':'Totalmente à medida. Não há produto de prateleira nem licenças recorrentes forçadas. Entregamos código que fica na sua organização — versionado, documentado e com conhecimento transferido.',
+    'q3.q':'Quanto tempo demora um projeto típico?','q3.a':'Entre 8 e 20 semanas dependendo da complexidade. Os primeiros módulos funcionais chegam na terceira semana, com demonstrações quinzenais ao cliente.',
+    'q4.q':'Como funciona o suporte depois do Go-Live?','q4.a':'Todos os projetos incluem SLA definido com tempos de resposta garantidos, monitorização proactiva e relatórios mensais. Não desaparecemos depois da entrega.',
+    'q5.q':'Os dados cumprem o RGPD?','q5.a':'Sim. Infraestrutura europeia, encriptação AES-256, RBAC, logs de auditoria imutáveis e DPA assinado. Conformidade RGPD é um requisito de projeto, não um extra.',
+    'q6.q':'Conseguem integrar com os nossos sistemas atuais?','q6.a':'Sim. A fase de Arquitetura inclui o mapeamento completo de todas as integrações. Temos experiência com SAP, Primavera, PHC, Sage e a maioria dos sistemas portugueses via APIs ou SAF-T.',
+    'q7.q':'Quanto custa?','q7.a':'Após a fase de Descoberta apresentamos uma proposta com preço fixo por fase — sem estimativas vagas. A Descoberta é remunerada e entrega documentos concretos, independentemente de o projeto avançar.',
+    'ct.lbl':'CONTACTO.DIRETO','ct.h1':'VAMOS','ct.h2':'FALAR.',
+    'ct.desc':'Partilhe o desafio que enfrenta. Em <strong>48 horas</strong> respondemos com uma análise inicial sem compromisso.',
+    'ct.email-lbl':'Email','ct.email-arrow':'ESCREVER →','ct.phone-lbl':'Telefone / WhatsApp','ct.phone-arrow':'LIGAR →',
+    'footer.copy':'© 2025 ASCENDIX ENGENHARIA · SOFTWARE, LDA. — TODOS OS DIREITOS RESERVADOS.'
+  },
+  en: {
+    'logo.sub':'Engineering · Software',
+    'nav.sobre':'About','nav.met':'Methodology','nav.srv':'Services','nav.faq':'FAQ','nav.contact':'Contact','nav.proposta':'Request Proposal',
+    'hero.tag':'SOFTWARE ENGINEERING · CRITICAL SYSTEMS · CONTRACTUAL SLA · PORTUGAL',
+    'hero.l1':'SOFTWARE ENGINEERING','hero.l2':'FOR DEMANDING OPERATIONS.','hero.l3':'SYSTEMS THAT DON\'T STOP.',
+    'hero.desc':'<strong>Ascendix Engineering</strong> designs, builds and operates mission-critical platforms. Clean code, solid architecture, predictable delivery — under SLA, with support and GDPR compliance.',
+    'hero.btn1':'Our Services →','hero.btn2':'Request Proposal','hero.available':'Available for new projects',
+    'stat.uptime':'Production Uptime','stat.tx':'Processed Transactions','stat.clients':'Active Clients','stat.routines':'Automated Routines',
+    'sobre.lbl':'ABOUT.ASCENDIX','sobre.h1':'MISSION','sobre.h2':'CRITICAL SOFTWARE.',
+    'sobre.p1':'Ascendix was founded in December 2025 with a simple principle: <strong>code that works in production, delivered on time and within the agreed budget.</strong>',
+    'sobre.p2':'We work with organisations that need reliability, not promises. Every project combines rigorous engineering, complete documentation and ongoing support.',
+    'kpi.years':'Years of Engineering','kpi.code':'Own Codebase','kpi.monitor':'Monitoring',
+    'card1.t':'Software as Infrastructure','card1.d':'We build platforms that sustain 24/7 operations. Every release goes through architecture review, automated testing and pre-production validation.',
+    'card2.t':'Compliance & Security','card2.d':'GDPR, encryption in transit and at rest, role-based access control and immutable audit logs. No shortcuts.',
+    'card3.t':'Traceable Engineering','card3.d':'Git, mandatory code review, isolated environments (dev / stage / prod) and CI/CD pipelines. Every line of code is auditable.',
+    'card4.t':'Contracted Support','card4.d':'Clear SLA, guaranteed response times, monthly reports and a documented and tested continuity plan.',
+    'met.lbl':'METHODOLOGY.DELIVERY','met.h1':'STRUCTURED METHOD.','met.h2':'PREDICTABLE DELIVERY.',
+    'met.desc':'Five phases with documented deliverables at each stage. No black boxes, no budget surprises. We iterate in short cycles so you see value from week two.',
+    's1.time':'1–2<br>Weeks','s1.title':'Discovery','s1.l1':'Workshops with operations & management','s1.l2':'Process mapping (AS-IS)','s1.l3':'KPI and friction identification','s1.l4':'Signed vision document',
+    's2.time':'1–3<br>Weeks','s2.title':'Architecture','s2.l1':'Data model and event flows','s2.l2':'Technology decisions (ADRs)','s2.l3':'Integration plan','s2.l4':'Cloud capacity and cost estimate',
+    's3.time':'2-week<br>Sprints','s3.title':'Development','s3.l1':'Validated incremental deliveries','s3.l2':'Code review and automated tests','s3.l3':'Fortnightly demo to client','s3.l4':'Continuous technical documentation',
+    's4.time':'2–4<br>Weeks','s4.title':'Go-Live','s4.l1':'Migration and load testing','s4.l2':'User training','s4.l3':'Documented rollback plan','s4.l4':'On-site support in the first days',
+    's5.time':'Ongoing','s5.title':'Operations','s5.l1':'24/7 monitoring and alerts','s5.l2':'SLA and monthly reports','s5.l3':'Evolution roadmap','s5.l4':'Security audits',
+    'srv.lbl':'SERVICES.DELIVERABLES','srv.h1':'WHAT WE DO,','srv.h2':'STRAIGHT TO THE POINT.',
+    'srv.desc':'End-to-end software engineering — architecture, code, integrations, cloud, security and support. No outsourcing, no surprises.',
+    'r1.t':'Custom Development','r1.tag':'Web · Mobile · API · Backend','r1.d':'Web and mobile applications built on real business requirements. Reactive frontend, robust backend, well-documented APIs and automated tests every sprint.',
+    'r2.t':'Systems Architecture','r2.tag':'Design · ADRs · Scalability','r2.d':'Defining the technical structure before writing the first line — data model, event flows, documented decisions and cloud cost estimates.',
+    'r3.t':'Integrations & APIs','r3.tag':'REST · GraphQL · Webhooks · ERP','r3.d':'Connecting systems — ERPs, accounting, payment gateways and legacy systems. OpenAPI documentation and contract tests on every endpoint.',
+    'r4.t':'Cloud & DevOps','r4.tag':'AWS · Azure · GCP · CI/CD · IaC','r4.d':'Infrastructure as code, CI/CD pipelines, isolated environments per project and monitoring with proactive alerts. Every deployment is traceable and reversible.',
+    'r5.t':'Security & Compliance','r5.tag':'GDPR · OAuth 2.0 · Audit · RBAC','r5.d':'Robust authentication, role-based access control, AES-256 encryption, immutable logs and signed DPA. GDPR compliance end-to-end.',
+    'r6.t':'Support & Operations','r6.tag':'SLA · 24/7 · Reports · Roadmap','r6.d':'Support contracts with guaranteed response times, continuous monitoring, monthly reports and product evolution under a co-created roadmap.',
+    'faq.lbl':'FREQUENTLY.ASKED','faq.h1':'FREQUENTLY','faq.h2':'ASKED.',
+    'faq.note':'Didn\'t find what you were looking for? Write to <a href="mailto:comercial@ascendixeng.pt">comercial@ascendixeng.pt</a>.',
+    'q1.q':'What kind of companies do you work with?','q1.a':'We work with SMEs and mid-sized companies that need custom-built software — in any sector. The focus is on operations where reliability is critical and off-the-shelf solutions fall short.',
+    'q2.q':'Is the software custom-built or a closed product?','q2.a':'Fully custom. No off-the-shelf product, no forced recurring licences. We deliver code that stays in your organisation — versioned, documented and with knowledge transferred.',
+    'q3.q':'How long does a typical project take?','q3.a':'Between 8 and 20 weeks depending on complexity. The first functional modules are ready in the third week, with fortnightly demos to the client.',
+    'q4.q':'How does support work after Go-Live?','q4.a':'All projects include a defined SLA with guaranteed response times, proactive monitoring and monthly operations reports. We don\'t disappear after delivery.',
+    'q5.q':'Is the data GDPR compliant?','q5.a':'Yes. European infrastructure, AES-256 encryption, RBAC, immutable audit logs and a signed DPA. GDPR compliance is a project requirement, not an add-on.',
+    'q6.q':'Can you integrate with our existing systems?','q6.a':'Yes. The Architecture phase includes a full mapping of all integrations. We have experience with SAP, Primavera, PHC, Sage and most Portuguese systems via APIs or SAF-T.',
+    'q7.q':'How much does it cost?','q7.a':'After the Discovery phase we present a fixed-price proposal per phase — no vague estimates. The Discovery itself is paid and delivers concrete documents, regardless of whether the project moves forward.',
+    'ct.lbl':'DIRECT.CONTACT','ct.h1':'LET\'S','ct.h2':'TALK.',
+    'ct.desc':'Share the challenge you\'re facing. Within <strong>48 hours</strong> we reply with an initial analysis and no commitment.',
+    'ct.email-lbl':'Email','ct.email-arrow':'WRITE →','ct.phone-lbl':'Phone / WhatsApp','ct.phone-arrow':'CALL →',
+    'footer.copy':'© 2025 ASCENDIX ENGINEERING · SOFTWARE, LDA. — ALL RIGHTS RESERVED.'
+  }
+};
+
+let currentLang = 'pt';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+
+  // Update button states
+  document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+  const dict = T[lang];
+
+  // Plain text elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+
+  // HTML elements (contain tags like <strong>, <a>)
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.dataset.i18nHtml;
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+
+  // Step times use innerHTML (have <br>)
+  document.querySelectorAll('[data-i18n].step-time').forEach(el => {
+    const key = el.dataset.i18n;
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+}
+
+/* ── FAQ ── */
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement, ans = item.querySelector('.faq-a'), open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight='0'; });
+    if (!open) { item.classList.add('open'); ans.style.maxHeight = ans.scrollHeight+'px'; }
+  });
+});
+
+/* ── COUNTERS ── */
+function animateCtr(el) {
+  const target=parseFloat(el.dataset.t), dec=parseInt(el.dataset.d||0), dur=1600, t0=performance.now();
+  (function tick(now){
+    const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,3), v=e*target;
+    el.textContent = dec>0 ? v.toFixed(dec) : Math.floor(v).toLocaleString('pt-PT');
+    if(p<1) requestAnimationFrame(tick);
+  })(t0);
+}
+function animateBars(){ document.querySelectorAll('.stat-fill').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w+'%'},150)); }
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.querySelectorAll('.ctr').forEach(animateCtr); animateBars(); io.unobserve(e.target); } });
+},{threshold:.25});
+const bar=document.querySelector('.stats-bar');
+if(bar) io.observe(bar);
+
+/* ── LAMP CONTACT ── */
+const lampObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('lamp-on'); lampObs.unobserve(e.target); } });
+},{threshold:.15});
+const ctSec = document.getElementById('contacto');
+if(ctSec) lampObs.observe(ctSec);
+
+/* ── GSAP CINEMATIC — SOBRE ── */
+gsap.registerPlugin(ScrollTrigger);
+
+/* kill white pin-spacer */
+document.head.insertAdjacentHTML('beforeend','<style>.pin-spacer{background:#0D0D0D!important}</style>');
+
+(function() {
+  const sobre   = document.getElementById('sobre');
+  const sBg     = document.getElementById('s-bg');
+  const sCard   = document.getElementById('s-card');
+  const sLeft   = document.getElementById('s-left');
+  const sRight  = document.getElementById('s-right');
+  const sKpis   = document.getElementById('s-kpis');
+  const sAcs    = ['sac1','sac2','sac3','sac4'].map(id=>document.getElementById(id));
+
+  if (!sobre || !sCard) return;
+
+  const vw = window.innerWidth, vh = window.innerHeight;
+
+  /* initial states */
+  gsap.set(sCard,  { y: vh + 60 });
+  gsap.set(sLeft,  { x: -40, autoAlpha: 0 });
+  gsap.set(sRight, { x:  40, autoAlpha: 0 });
+  gsap.set(sKpis,  { y:  16, autoAlpha: 0 });
+  gsap.set(sAcs,   { y:  20, autoAlpha: 0, scale: 0.96 });
+
+  /* mouse sheen */
+  sobre.addEventListener('mousemove', e => {
+    const r = sCard.getBoundingClientRect();
+    sCard.style.setProperty('--mx', (e.clientX - r.left)+'px');
+    sCard.style.setProperty('--my', (e.clientY - r.top)+'px');
+  });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: sobre,
+      start: 'top top',
+      end: '+=3400',
+      pin: true,
+      pinSpacing: true,
+      scrub: 0.7,
+      anticipatePin: 1,
+    }
+  });
+
+  tl
+    /* FASE 1 — bg some e card sobe juntos */
+    .to(sBg,   { scale:1.06, filter:'blur(16px)', opacity:0, ease:'power2.out', duration:1 }, 0)
+    .to(sCard, { y:0, ease:'power2.out', duration:1 }, 0)
+
+    /* FASE 2 — expande E conteúdo entra AO MESMO TEMPO */
+    .to(sCard,  { width:'100%', height:'100%', borderRadius:'0px', ease:'power2.inOut', duration:1 })
+    .to(sLeft,  { x:0, autoAlpha:1, ease:'power3.out', duration:0.9 }, '-=1.0')
+    .to(sRight, { x:0, autoAlpha:1, ease:'power3.out', duration:0.9 }, '<')
+    .to(sKpis,  { y:0, autoAlpha:1, ease:'back.out(1.3)', duration:0.7 }, '-=0.6')
+    .to(sAcs,   { y:0, autoAlpha:1, stagger:0.08, ease:'back.out(1.2)', duration:0.7 }, '-=0.5')
+
+    /* FASE 3 — pausa para leitura */
+    .to({}, { duration: 2.5 })
+
+    /* FASE 4 — saída */
+    .to([sLeft, sRight, sKpis, sAcs], { autoAlpha:0, ease:'power2.in', duration:0.5 })
+    .to(sCard, {
+      width: vw < 768 ? '92vw' : '86vw',
+      height: vw < 768 ? '88vh' : '82vh',
+      borderRadius:'28px', ease:'power2.inOut', duration:0.8
+    }, '-=0.2')
+    .to(sCard, { y:-(vh + 80), ease:'power2.in', duration:0.7 });
+
+})();
+
+
+const secs=document.querySelectorAll('section[id]'), lnks=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let cur=''; secs.forEach(s=>{if(window.scrollY>=s.offsetTop-80) cur=s.id;});
+  lnks.forEach(l=>{l.style.color=l.getAttribute('href')==='#'+cur?'var(--white)':'';});
+},{passive:true});
+</script>
+</body>
+</html>
